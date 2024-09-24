@@ -42,10 +42,23 @@ func main() {
 	transactionHandler := handler.NewTransactionHandler(transactionService)
 
 	router := gin.Default()
-	router.Use(cors.Default())
+	//router.Use(cors.Default())
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000"}, // Ganti dengan URL frontend
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+		AllowHeaders:     []string{"Content-Type", "Authorization"},
+		AllowCredentials: true,
+	}))
+
+	// Tangani preflight request OPTIONS
+	router.OPTIONS("/*path", func(c *gin.Context) {
+		c.AbortWithStatus(204) // Respons tanpa konten untuk preflight request
+	})
+
 	router.Static("/images", "./images")
 	api := router.Group("/api/v1")
 
+	api.GET("/", campaignHandler.GetCampaigns)
 	api.POST("/users", userHandler.RegisterUser)
 	api.POST("/sessions", userHandler.Login)
 	api.POST("/email_checkers", userHandler.CheckEmailAvailability)
@@ -59,9 +72,9 @@ func main() {
 	api.POST("/campaign-images", authMiddleware(authService, userService), campaignHandler.UploadImage)
 
 	api.GET("/campaigns/:id/transactions", authMiddleware(authService, userService), transactionHandler.GetCampaignTransactions)
-	api.GET("transactions", authMiddleware(authService, userService), transactionHandler.GetUserTransactions)
-	api.POST("transactions", authMiddleware(authService, userService), transactionHandler.CreateTransaction)
-	api.POST("transactions/notification", transactionHandler.GetNotification)
+	api.GET("/transactions", authMiddleware(authService, userService), transactionHandler.GetUserTransactions)
+	api.POST("/transactions", authMiddleware(authService, userService), transactionHandler.CreateTransaction)
+	api.POST("/transactions/notification", transactionHandler.GetNotification)
 
 	router.Run()
 }
