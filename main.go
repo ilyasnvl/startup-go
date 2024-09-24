@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"startup/auth"
 	"startup/campaign"
 	"startup/handler"
@@ -20,7 +22,9 @@ import (
 )
 
 func main() {
-	dsn := "mysql://root:BIxtVXVeBwGStXanruilzJuFUjowEpKz@autorack.proxy.rlwy.net:46142/railway"
+	// dsn := "mysql://root:BIxtVXVeBwGStXanruilzJuFUjowEpKz@autorack.proxy.rlwy.net:46142/railway"
+	dsn := os.Getenv("MYSQL_PUBLIC_URL")
+	fmt.Print(dsn)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 	if err != nil {
