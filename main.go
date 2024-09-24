@@ -20,7 +20,7 @@ import (
 )
 
 func main() {
-	dsn := "mysql://root:BIxtVXVeBwGStXanruilzJuFUjowEpKz@mysql.railway.internal:3306/railway"
+	dsn := "mysql://root:BIxtVXVeBwGStXanruilzJuFUjowEpKz@autorack.proxy.rlwy.net:46142/railway"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 	if err != nil {
