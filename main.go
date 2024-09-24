@@ -23,7 +23,7 @@ import (
 
 func main() {
 	// dsn := "mysql://root:BIxtVXVeBwGStXanruilzJuFUjowEpKz@autorack.proxy.rlwy.net:46142/railway"
-	dsn := os.Getenv("MYSQL_DSN")
+	dsn := os.Getenv("DB_DSN")
 	fmt.Print(dsn)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
