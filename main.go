@@ -48,7 +48,7 @@ func main() {
 	router := gin.Default()
 	//router.Use(cors.Default())
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000"}, // Ganti dengan URL frontend
+		AllowOrigins:     []string{"https://startup-frontend-production.up.railway.app"}, // Ganti dengan URL frontend
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
