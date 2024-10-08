@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
+	"path/filepath"
 	"startup/auth"
 	"startup/campaign"
 	"startup/handler"
@@ -14,16 +14,19 @@ import (
 	"startup/user"
 	"strings"
 
+	webHandler "startup/web/handler"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
 func main() {
-	//dsn := "root:@tcp(127.0.0.1:3306)/startup?charset=utf8mb4&parseTime=True&loc=Local"
-	dsn := os.Getenv("DB_DSN")
+	dsn := "root:@tcp(127.0.0.1:3306)/startup?charset=utf8mb4&parseTime=True&loc=Local"
+	//dsn := os.Getenv("DB_DSN")
 	fmt.Print(dsn)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
@@ -45,10 +48,12 @@ func main() {
 	campaignHandler := handler.NewCampaignHandler(campaignService)
 	transactionHandler := handler.NewTransactionHandler(transactionService)
 
+	userWebHandler := webHandler.NewUserHandler(userService)
+
 	router := gin.Default()
 	//router.Use(cors.Default())
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"https://crowdfundingily.up.railway.app"}, // Ganti dengan URL frontend
+		AllowOrigins:     []string{"http://localhost:3000"}, // Ganti dengan URL frontend
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
@@ -59,7 +64,13 @@ func main() {
 		c.AbortWithStatus(204) // Respons tanpa konten untuk preflight request
 	})
 
+	//router.LoadHTMLGlob("web/templates/**/*")
+	router.HTMLRender = loadTemplates("./web/templates")
+
 	router.Static("/images", "./images")
+	router.Static("/css", "./web/assets/css")
+	router.Static("/js", "./web/assets/js")
+	router.Static("/webfonts", "./web/assets/webfonts")
 	api := router.Group("/api/v1")
 
 	api.GET("/", campaignHandler.GetCampaigns)
@@ -79,6 +90,10 @@ func main() {
 	api.GET("/transactions", authMiddleware(authService, userService), transactionHandler.GetUserTransactions)
 	api.POST("/transactions", authMiddleware(authService, userService), transactionHandler.CreateTransaction)
 	api.POST("/transactions/notification", transactionHandler.GetNotification)
+
+	router.GET("/users", userWebHandler.Index)
+	router.GET("/users/new", userWebHandler.New)
+	router.POST("/users", userWebHandler.Create)
 
 	router.Run()
 }
@@ -127,9 +142,25 @@ func authMiddleware(authService auth.Service, userService user.Service) gin.Hand
 	}
 }
 
-//ambil nilai header Authorization: Bearer tokentoken
-//ambil dari header Authorization, kita ambil nilai tokennya saja
-//kita validasi token
-//ambil user_id
-//ambil user dari Db berdasarkan user_id lewat service
-//kita set context isinya user
+func loadTemplates(templatesDir string) multitemplate.Renderer {
+	r := multitemplate.NewRenderer()
+
+	layouts, err := filepath.Glob(templatesDir + "/layouts/*")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	includes, err := filepath.Glob(templatesDir + "/**/*")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	// Generate our templates map from our layouts/ and includes/ directories
+	for _, include := range includes {
+		layoutCopy := make([]string, len(layouts))
+		copy(layoutCopy, layouts)
+		files := append(layoutCopy, include)
+		r.AddFromFiles(filepath.Base(include), files...)
+	}
+	return r
+}
