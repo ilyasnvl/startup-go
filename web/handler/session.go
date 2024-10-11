@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"startup/user"
 
@@ -26,12 +27,14 @@ func (h *sessionHandler) Create(c *gin.Context) {
 	err := c.ShouldBind(&input)
 	if err != nil {
 		c.Redirect(http.StatusFound, "/login")
+		fmt.Println("error:", err)
 		return
 	}
 
 	user, err := h.userService.Login(input)
 	if err != nil || user.Role != "admin" {
 		c.Redirect(http.StatusFound, "/login")
+		fmt.Println("error2:", err)
 		return
 	}
 

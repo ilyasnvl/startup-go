@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"path/filepath"
 	"startup/auth"
 	"startup/campaign"
@@ -28,8 +27,8 @@ import (
 )
 
 func main() {
-	//dsn := "root:@tcp(127.0.0.1:3306)/startup?charset=utf8mb4&parseTime=True&loc=Local"
-	dsn := os.Getenv("DB_DSN")
+	dsn := "root:@tcp(127.0.0.1:3306)/startup?charset=utf8mb4&parseTime=True&loc=Local"
+	//dsn := os.Getenv("DB_DSN")
 	fmt.Print(dsn)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
