@@ -28,7 +28,7 @@ import (
 )
 
 func main() {
-	// dsn := "root:@tcp(127.0.0.1:3306)/startup?charset=utf8mb4&parseTime=True&loc=Local"
+	//dsn := "root:@tcp(127.0.0.1:3306)/startup?charset=utf8mb4&parseTime=True&loc=Local"
 	dsn := os.Getenv("DB_DSN")
 	fmt.Print(dsn)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
@@ -59,7 +59,7 @@ func main() {
 	router := gin.Default()
 	//router.Use(cors.Default())
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{os.Getenv("AUTH_ORIGIN")}, // Ganti dengan URL frontend
+		AllowOrigins:     []string{"https://crowdfundingily.up.railway.app"}, // Ganti dengan URL frontend
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
