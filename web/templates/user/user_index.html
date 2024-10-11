@@ -12,15 +12,20 @@
                     <th>Name</th>
                     <th>Email</th>
                     <th>Occupation</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
-                {{ range.users }}
+                {{ range .users }}
                 <tr>
                     <td><img class="img-fluid img-thumbnail" src="{{ .AvatarFileName }}" width="60"></td>
                     <td>{{ .Name }}</td>
                     <td>{{ .Email }}</td>
                     <td>{{ .Occupation }}</td>
+                    <td>
+                        <a href="/users/edit/{{ .ID }}"><i class="fa fa-edit mr-3"></i></a>
+                        <a href="/users/avatar/{{ .ID }}"><i class="fa fa-camera"></i></a>
+                    </td>
                 </tr>
                 {{ end }}
             </tbody>

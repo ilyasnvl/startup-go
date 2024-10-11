@@ -8,8 +8,8 @@ type RegisterUserInput struct {
 }
 
 type LoginInput struct {
-	Email    string `json:"email" binding:"required,email"`
-	Password string `json:"password" binding:"required,min=8"`
+	Email    string `json:"email" form:"email" binding:"required,email"`
+	Password string `json:"password" form:"password" binding:"required,min=8"`
 }
 
 type CheckEmailInput struct {
@@ -21,5 +21,13 @@ type FormCreateUserInput struct {
 	Email      string `form:"email" binding:"required,email"`
 	Occupation string `form:"occupation" binding:"required"`
 	Password   string `form:"password" binding:"required,min=8"`
+	Error      error
+}
+
+type FormUpdateUserInput struct {
+	ID         int
+	Name       string `form:"name" binding:"required"`
+	Email      string `form:"email" binding:"required,email"`
+	Occupation string `form:"occupation" binding:"required"`
 	Error      error
 }
